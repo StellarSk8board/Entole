@@ -1,54 +1,71 @@
-# Gemini CLI Architecture Overview
+# Entole CLI Architecture Overview
 
-This document provides a high-level overview of the Gemini CLI's architecture.
+This document provides a high-level overview of the Entole CLI's architecture.
 
 ## Core components
 
-The Gemini CLI is primarily composed of two main packages, along with a suite of tools that can be used by the system in the course of handling command-line input:
+The Entole CLI is a single-package application with a modular architecture:
 
-1.  **CLI package (`packages/cli`):**
-    - **Purpose:** This contains the user-facing portion of the Gemini CLI, such as handling the initial user input, presenting the final output, and managing the overall user experience.
-    - **Key functions contained in the package:**
-      - [Input processing](./cli/commands.md)
-      - History management
-      - Display rendering
-      - [Theme and UI customization](./cli/themes.md)
-      - [CLI configuration settings](./cli/configuration.md)
+1.  **Command Layer (`src/commands/`):**
+    - **Purpose:** Handles user-facing CLI commands (chat, embed, providers, doctor)
+    - **Key functions:**
+      - Command parsing and validation
+      - Input/output formatting
+      - Error handling and user feedback
 
-2.  **Core package (`packages/core`):**
-    - **Purpose:** This acts as the backend for the Gemini CLI. It receives requests sent from `packages/cli`, orchestrates interactions with the Gemini API, and manages the execution of available tools.
-    - **Key functions contained in the package:**
-      - API client for communicating with the Google Gemini API
-      - Prompt construction and management
-      - Tool registration and execution logic
-      - State management for conversations or sessions
-      - Server-side configuration
+2.  **Provider Layer (`src/providers/`):**
+    - **Purpose:** Abstracts different AI providers behind a unified interface
+    - **Key functions:**
+      - Provider adapters for OpenAI, Anthropic, Ollama, OpenRouter
+      - Request/response normalization
+      - Error handling and retry logic
+      - Model capability detection
 
-3.  **Tools (`packages/core/src/tools/`):**
-    - **Purpose:** These are individual modules that extend the capabilities of the Gemini model, allowing it to interact with the local environment (e.g., file system, shell commands, web fetching).
-    - **Interaction:** `packages/core` invokes these tools based on requests from the Gemini model.
+3.  **Configuration Layer (`src/config/`):**
+    - **Purpose:** Manages configuration loading and validation
+    - **Key functions:**
+      - Environment variable processing
+      - Config file parsing (JSON/YAML)
+      - CLI flag handling
+      - Configuration precedence and merging
+
+4.  **Output Layer (`src/output/`):**
+    - **Purpose:** Handles response formatting and display
+    - **Key functions:**
+      - Human-readable formatting
+      - JSON envelope generation
+      - Streaming output support
+      - Error message formatting
 
 ## Interaction Flow
 
-A typical interaction with the Gemini CLI follows this flow:
+A typical interaction with the Entole CLI follows this flow:
 
-1.  **User input:** The user types a prompt or command into the terminal, which is managed by `packages/cli`.
-2.  **Request to core:** `packages/cli` sends the user's input to `packages/core`.
-3.  **Request processed:** The core package:
-    - Constructs an appropriate prompt for the Gemini API, possibly including conversation history and available tool definitions.
-    - Sends the prompt to the Gemini API.
-4.  **Gemini API response:** The Gemini API processes the prompt and returns a response. This response might be a direct answer or a request to use one of the available tools.
-5.  **Tool execution (if applicable):**
-    - When the Gemini API requests a tool, the core package prepares to execute it.
-    - If the requested tool can modify the file system or execute shell commands, the user is first given details of the tool and its arguments, and the user must approve the execution.
-    - Read-only operations, such as reading files, might not require explicit user confirmation to proceed.
-    - Once confirmed, or if confirmation is not required, the core package executes the relevant action within the relevant tool, and the result is sent back to the Gemini API by the core package.
-    - The Gemini API processes the tool result and generates a final response.
-6.  **Response to CLI:** The core package sends the final response back to the CLI package.
-7.  **Display to user:** The CLI package formats and displays the response to the user in the terminal.
+1.  **User input:** The user invokes a command (chat, embed, etc.) with parameters
+2.  **Configuration loading:** The system loads configuration from environment variables, config files, and CLI flags
+3.  **Provider resolution:** Based on configuration, the appropriate AI provider is selected and initialized
+4.  **Request processing:** The command handler:
+    - Validates and processes input parameters
+    - Constructs the appropriate request for the selected provider
+    - Handles file input if specified (@filename syntax)
+5.  **Provider interaction:** The provider adapter:
+    - Formats the request according to the provider's API requirements
+    - Makes the HTTP request to the provider's API
+    - Handles authentication, rate limiting, and error responses
+6.  **Response processing:** The system:
+    - Normalizes the provider's response to a common format
+    - Applies any necessary transformations or filtering
+    - Records timing information if enabled
+7.  **Output formatting:** Based on the requested output format:
+    - Human-readable: Formats with colors, metadata, and user-friendly text
+    - JSON: Creates structured envelopes with consistent schema
+8.  **Display to user:** The formatted response is written to stdout/stderr as appropriate
 
 ## Key Design Principles
 
-- **Modularity:** Separating the CLI (frontend) from the Core (backend) allows for independent development and potential future extensions (e.g., different frontends for the same backend).
-- **Extensibility:** The tool system is designed to be extensible, allowing new capabilities to be added.
-- **User experience:** The CLI focuses on providing a rich and interactive terminal experience.
+- **Provider Abstraction:** All AI providers implement a common interface, making it easy to add new providers or switch between them
+- **Configuration Flexibility:** Multiple configuration sources with clear precedence rules allow users to configure the CLI in the way that works best for their workflow
+- **Consistent Output:** Both human-readable and JSON output formats provide consistent, predictable results across all providers
+- **Error Handling:** Normalized error responses with helpful hints make troubleshooting easier
+- **Extensibility:** The modular architecture makes it straightforward to add new providers, commands, or output formats
+- **Developer Experience:** TypeScript throughout, comprehensive testing, and clear interfaces make the codebase maintainable

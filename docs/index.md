@@ -1,10 +1,10 @@
-# Welcome to Gemini CLI documentation
+# Welcome to Entole CLI documentation
 
-This documentation provides a comprehensive guide to installing, using, and developing Gemini CLI. This tool lets you interact with Gemini models through a command-line interface.
+This documentation provides a comprehensive guide to installing, using, and developing Entole CLI. This tool lets you interact with multiple AI providers through a unified command-line interface.
 
 ## Overview
 
-Gemini CLI brings the capabilities of Gemini models to your terminal in an interactive Read-Eval-Print Loop (REPL) environment. Gemini CLI consists of a client-side application (`packages/cli`) that communicates with a local server (`packages/core`), which in turn manages requests to the Gemini API and its AI models. Gemini CLI also contains a variety of tools for tasks such as performing file system operations, running shells, and web fetching, which are managed by `packages/core`.
+Entole CLI brings the capabilities of multiple AI providers (OpenAI, Anthropic, Ollama, OpenRouter) to your terminal through a simple, unified interface. Entole CLI is a single-package application that provides chat and embedding functionality across multiple AI providers with consistent configuration and output formats.
 
 ## Navigating the documentation
 
