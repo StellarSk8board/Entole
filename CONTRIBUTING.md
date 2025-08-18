@@ -1,27 +1,16 @@
-# How to Contribute
+# Contributing to Entole
 
-We would love to accept your patches and contributions to this project.
+We welcome contributions to Entole! This project is fully open source under the Apache 2.0 license, and we encourage community involvement.
 
 ## Before you begin
 
-### Sign our Contributor License Agreement
+### Code of Conduct
 
-Contributions to this project must be accompanied by a
-[Contributor License Agreement](https://cla.developers.google.com/about) (CLA).
-You (or your employer) retain the copyright to your contribution; this simply
-gives us permission to use and redistribute your contributions as part of the
-project.
+This project follows standard open source community guidelines. Please be respectful and constructive in all interactions.
 
-If you or your current employer have already signed the Google CLA (even if it
-was for a different project), you probably don't need to do it again.
+### License Agreement
 
-Visit <https://cla.developers.google.com/> to see your current agreements or to
-sign a new one.
-
-### Review our Community Guidelines
-
-This project follows [Google's Open Source Community
-Guidelines](https://opensource.google/conduct/).
+By contributing to this project, you agree that your contributions will be licensed under the Apache 2.0 license. You retain copyright to your contributions.
 
 ## Contribution Process
 
@@ -76,9 +65,15 @@ In the PR description, explain the "why" behind your changes and link to the rel
 
 ## Forking
 
-If you are forking the repository you will be able to run the Build, Test and Integration test workflows. However in order to make the integration tests run you'll need to add a [GitHub Repository Secret](https://docs.github.com/en/actions/security-for-github-actions/security-guides/using-secrets-in-github-actions#creating-secrets-for-a-repository) with a value of `GEMINI_API_KEY` and set that to a valid API key that you have available. Your key and secret are private to your repo; no one without access can see your key and you cannot see any secrets related to this repo.
+If you are forking the repository, you will be able to run the Build, Test, and Integration test workflows. However, to make the integration tests run, you'll need to add appropriate API keys as [GitHub Repository Secrets](https://docs.github.com/en/actions/security-for-github-actions/security-guides/using-secrets-in-github-actions#creating-secrets-for-a-repository):
 
-Additionally you will need to click on the `Actions` tab and enable workflows for your repository, you'll find it's the large blue button in the center of the screen.
+- `OPENAI_API_KEY` - For OpenAI integration tests
+- `ANTHROPIC_API_KEY` - For Anthropic integration tests  
+- `OPENROUTER_API_KEY` - For OpenRouter integration tests
+
+Your keys and secrets are private to your repo; no one without access can see your keys.
+
+Additionally, you will need to click on the `Actions` tab and enable workflows for your repository.
 
 ## Development Setup and Workflow
 
@@ -88,9 +83,7 @@ This section guides contributors on how to build, modify, and understand the dev
 
 **Prerequisites:**
 
-1.  **Node.js**:
-    - **Development:** Please use Node.js `~20.19.0`. This specific version is required due to an upstream development dependency issue. You can use a tool like [nvm](https://github.com/nvm-sh/nvm) to manage Node.js versions.
-    - **Production:** For running the CLI in a production environment, any version of Node.js `>=20` is acceptable.
+1.  **Node.js**: Version 18 or higher is required. You can use a tool like [nvm](https://github.com/nvm-sh/nvm) to manage Node.js versions.
 2.  **Git**
 
 ### Build Process
@@ -98,8 +91,8 @@ This section guides contributors on how to build, modify, and understand the dev
 To clone the repository:
 
 ```bash
-git clone https://github.com/google-gemini/gemini-cli.git # Or your fork's URL
-cd gemini-cli
+git clone https://github.com/StellarSk8board/Entole.git # Or your fork's URL
+cd entole
 ```
 
 To install dependencies defined in `package.json` as well as root dependencies:
@@ -114,19 +107,7 @@ To build the entire project (all packages):
 npm run build
 ```
 
-This command typically compiles TypeScript to JavaScript, bundles assets, and prepares the packages for execution. Refer to `scripts/build.js` and `package.json` scripts for more details on what happens during the build.
-
-### Enabling Sandboxing
-
-[Sandboxing](#sandboxing) is highly recommended and requires, at a minimum, setting `GEMINI_SANDBOX=true` in your `~/.env` and ensuring a sandboxing provider (e.g. `macOS Seatbelt`, `docker`, or `podman`) is available. See [Sandboxing](#sandboxing) for details.
-
-To build both the `gemini` CLI utility and the sandbox container, run `build:all` from the root directory:
-
-```bash
-npm run build:all
-```
-
-To skip building the sandbox container, you can use `npm run build` instead.
+This command compiles TypeScript to JavaScript and bundles the CLI for distribution. Refer to `tsup.config.ts` and `package.json` scripts for more details on what happens during the build.
 
 ### Running
 

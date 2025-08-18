@@ -1,280 +1,772 @@
-# Gemini CLI
+# Entole CLI
 
-[![Gemini CLI CI](https://github.com/google-gemini/gemini-cli/actions/workflows/ci.yml/badge.svg)](https://github.com/google-gemini/gemini-cli/actions/workflows/ci.yml)
-[![Version](https://img.shields.io/npm/v/@google/gemini-cli)](https://www.npmjs.com/package/@google/gemini-cli)
-[![License](https://img.shields.io/github/license/google-gemini/gemini-cli)](https://github.com/google-gemini/gemini-cli/blob/main/LICENSE)
+[![Entole CLI CI](https://github.com/StellarSk8board/Entole/actions/workflows/ci.yml/badge.svg)](https://github.com/StellarSk8board/Entole/actions/workflows/ci.yml)
+[![Version](https://img.shields.io/npm/v/entole)](https://www.npmjs.com/package/entole)
+[![License](https://img.shields.io/github/license/StellarSk8board/Entole)](https://github.com/StellarSk8board/Entole/blob/main/LICENSE)
 
-![Gemini CLI Screenshot](./docs/assets/gemini-screenshot.png)
+Entole is a multi-provider AI CLI for chat and embeddings by Metisse. It provides a unified interface to interact with multiple AI providers including OpenAI, Anthropic, Ollama, and OpenRouter through a simple command-line interface.
 
-Gemini CLI is an open-source AI agent that brings the power of Gemini directly into your terminal. It provides lightweight access to Gemini, giving you the most direct path from your prompt to our model.
+## 🚀 Why Entole CLI?
 
-## 🚀 Why Gemini CLI?
-
-- **🎯 Free tier**: 60 requests/min and 1,000 requests/day with personal Google account
-- **🧠 Powerful Gemini 2.5 Pro**: Access to 1M token context window
-- **🔧 Built-in tools**: Google Search grounding, file operations, shell commands, web fetching
-- **🔌 Extensible**: MCP (Model Context Protocol) support for custom integrations
-- **💻 Terminal-first**: Designed for developers who live in the command line
-- **🛡️ Open source**: Apache 2.0 licensed
+- **🔄 Multi-provider**: Support for OpenAI, Anthropic, Ollama, and OpenRouter
+- **🎯 Unified interface**: Single CLI for chat and embeddings across providers
+- **⚙️ Flexible configuration**: Environment variables, config files, and CLI flags
+- **📊 Built-in observability**: Optional timing collection and structured output
+- **💻 Developer-friendly**: JSON output mode for scripting and automation
+- **🛡️ Open source**: Apache 2.0 licensed with upstream attribution
 
 ## 📦 Installation
 
-### Quick Install
+### System Requirements
 
-#### Run instantly with npx
-
-```bash
-# Using npx (no installation required)
-npx https://github.com/google-gemini/gemini-cli
-```
-
-#### Install globally with npm
-
-```bash
-npm install -g @google/gemini-cli
-```
-
-#### Install globally with Homebrew (macOS/Linux)
-
-```bash
-brew install gemini-cli
-```
-
-#### System Requirements
-
-- Node.js version 20 or higher
+- Node.js version 18 or higher
 - macOS, Linux, or Windows
+
+### Install from Source
+
+```bash
+# Clone the repository
+git clone https://github.com/StellarSk8board/Entole.git
+cd entole
+
+# Install dependencies
+npm install
+
+# Build the CLI
+npm run build
+
+# Install globally
+npm install -g .
+```
+
+### Development Setup
+
+```bash
+# Install dependencies
+npm install
+
+# Run in development mode
+npm run dev
+
+# Run tests
+npm test
+
+# Run with coverage
+npm run test:coverage
+```
 
 ## 📋 Key Features
 
-### Code Understanding & Generation
+### Multi-Provider Support
 
-- Query and edit large codebases
-- Generate new apps from PDFs, images, or sketches using multimodal capabilities
-- Debug issues and troubleshoot with natural language
+- **OpenAI**: GPT-4, GPT-3.5-turbo, and embedding models
+- **Anthropic**: Claude 3.5 Sonnet, Claude 3 Opus, and other Claude models
+- **Ollama**: Local models including Llama 2, Code Llama, and custom models
+- **OpenRouter**: Access to multiple providers through a single API
 
-### Automation & Integration
+### Command Interface
 
-- Automate operational tasks like querying pull requests or handling complex rebases
-- Use MCP servers to connect new capabilities, including [media generation with Imagen, Veo or Lyria](https://github.com/GoogleCloudPlatform/vertex-ai-creative-studio/tree/main/experiments/mcp-genmedia)
-- Run non-interactively in scripts for workflow automation
+- **Chat**: Interactive conversations with AI models
+- **Embeddings**: Generate vector embeddings for text
+- **Provider Management**: List available providers and their capabilities
+- **Configuration Doctor**: Validate and troubleshoot configuration
 
-### Advanced Capabilities
+### Configuration & Output
 
-- Ground your queries with built-in [Google Search](https://ai.google.dev/gemini-api/docs/grounding) for real-time information
-- Conversation checkpointing to save and resume complex sessions
-- Custom context files (GEMINI.md) to tailor behavior for your projects
+- **Flexible Configuration**: Environment variables, JSON/YAML config files, CLI flags
+- **Multiple Output Formats**: Human-friendly text or structured JSON envelopes
+- **Streaming Support**: Real-time streaming responses for chat operations
+- **Error Handling**: Normalized error responses with helpful hints
 
-### GitHub Integration
+## 🔐 Configuration
 
-Integrate Gemini CLI directly into your GitHub workflows with [**Gemini CLI GitHub Action**](https://github.com/google-github-actions/run-gemini-cli):
+Entole supports multiple configuration methods with the following precedence (highest to lowest):
 
-- **Pull Request Reviews**: Automated code review with contextual feedback and suggestions
-- **Issue Triage**: Automated labeling and prioritization of GitHub issues based on content analysis
-- **On-demand Assistance**: Mention `@gemini-cli` in issues and pull requests for help with debugging, explanations, or task delegation
-- **Custom Workflows**: Build automated, scheduled and on-demand workflows tailored to your team's needs
+1. **Environment Variables** (highest priority)
+2. **Configuration Files** (middle priority)  
+3. **CLI Flags** (lowest priority)
 
-## 🔐 Authentication Options
-
-Choose the authentication method that best fits your needs:
-
-### Option 1: OAuth login (Using your Google Account)
-
-**✨ Best for:** Individual developers as well as anyone who has a Gemini Code Assist License. (see [quota limits and terms of service](https://cloud.google.com/gemini/docs/quotas) for details)
-
-**Benefits:**
-
-- **Free tier**: 60 requests/min and 1,000 requests/day
-- **Gemini 2.5 Pro** with 1M token context window
-- **No API key management** - just sign in with your Google account
-- **Automatic updates** to latest models
-
-#### Start Gemini CLI, then choose OAuth and follow the browser authentication flow when prompted
+### Environment Variables
 
 ```bash
-gemini
+# Provider API Keys
+export OPENAI_API_KEY="sk-..."
+export ANTHROPIC_API_KEY="sk-ant-..."
+export OPENROUTER_API_KEY="sk-or-..."
+
+# Ollama Configuration
+export OLLAMA_HOST="http://localhost:11434"
+export OLLAMA_MODEL="llama2"
+
+# Default Providers
+export ENTOLE_DEFAULT_CHAT_PROVIDER="openai"
+export ENTOLE_DEFAULT_EMBEDDINGS_PROVIDER="openai"
+
+# Output Configuration
+export ENTOLE_OUTPUT_FORMAT="human"  # or "json"
+export ENTOLE_STREAMING="true"
+
+# Observability
+export ENTOLE_TIMINGS="false"
 ```
 
-#### If you are using a paid Code Assist License from your organization, remember to set the Google Cloud Project
+### Configuration Files
 
-```bash
-# Set your Google Cloud Project
-export GOOGLE_CLOUD_PROJECT="YOUR_PROJECT_NAME"
-gemini
+Create `entole.config.json` or `entole.config.yaml` in your project root or `~/.entole/`:
+
+```json
+{
+  "providers": {
+    "default": {
+      "chat": "openai",
+      "embeddings": "openai"
+    },
+    "openai": {
+      "apiKey": "sk-...",
+      "baseUrl": "https://api.openai.com/v1",
+      "defaultModel": "gpt-4o-mini"
+    },
+    "anthropic": {
+      "apiKey": "sk-ant-...",
+      "defaultModel": "claude-3-5-sonnet-20241022"
+    },
+    "ollama": {
+      "host": "http://localhost:11434",
+      "defaultModel": "llama2"
+    },
+    "openrouter": {
+      "apiKey": "sk-or-...",
+      "defaultModel": "openai/gpt-4o-mini"
+    }
+  },
+  "output": {
+    "format": "human",
+    "streaming": true
+  },
+  "observability": {
+    "timings": false
+  }
+}
 ```
-
-### Option 2: Gemini API Key
-
-**✨ Best for:** Developers who need specific model control or paid tier access
-
-**Benefits:**
-
-- **Free tier**: 100 requests/day with Gemini 2.5 Pro
-- **Model selection**: Choose specific Gemini models
-- **Usage-based billing**: Upgrade for higher limits when needed
-
-```bash
-# Get your key from https://aistudio.google.com/apikey
-export GEMINI_API_KEY="YOUR_API_KEY"
-gemini
-```
-
-### Option 3: Vertex AI
-
-**✨ Best for:** Enterprise teams and production workloads
-
-**Benefits:**
-
-- **Enterprise features**: Advanced security and compliance
-- **Scalable**: Higher rate limits with billing account
-- **Integration**: Works with existing Google Cloud infrastructure
-
-```bash
-# Get your key from Google Cloud Console
-export GOOGLE_API_KEY="YOUR_API_KEY"
-export GOOGLE_GENAI_USE_VERTEXAI=true
-gemini
-```
-
-For Google Workspace accounts and other authentication methods, see the [authentication guide](./docs/cli/authentication.md).
 
 ## 🚀 Getting Started
 
 ### Basic Usage
 
-#### Start in current directory
+#### Chat with AI models
 
 ```bash
-gemini
+# Basic chat
+entole chat "Hello, how are you?"
+
+# Use specific provider and model
+entole chat "Explain quantum computing" --provider anthropic --model claude-3-5-sonnet-20241022
+
+# Stream response
+entole chat "Write a story" --stream
+
+# Read prompt from file
+entole chat --file prompt.txt
+
+# JSON output for scripting
+entole chat "What is 2+2?" --json
 ```
 
-#### Include multiple directories
+#### Generate embeddings
 
 ```bash
-gemini --include-directories ../lib,../docs
+# Basic embedding
+entole embed "Hello world"
+
+# Multiple texts
+entole embed "Text 1" "Text 2" "Text 3"
+
+# From file
+entole embed @document.txt
+
+# Specific provider
+entole embed "Sample text" --provider openai --model text-embedding-3-large
 ```
 
-#### Use specific model
+#### Provider management
 
 ```bash
-gemini -m gemini-2.5-flash
-```
+# List available providers
+entole providers list
 
-#### Non-interactive mode for scripts
-
-```bash
-gemini -p "Explain the architecture of this codebase"
+# Check configuration
+entole config doctor
 ```
 
 ### Quick Examples
 
-#### Start a new project
+#### Chat Examples
 
-````bash
-cd new-project/
-gemini
-> Write me a Discord bot that answers questions using a FAQ.md file I will provide
-
-#### Analyze existing code
 ```bash
-git clone https://github.com/google-gemini/gemini-cli
-cd gemini-cli
-gemini
-> Give me a summary of all of the changes that went in yesterday
-````
+# Simple question
+entole chat "What is the capital of France?"
 
-## 📚 Documentation
+# Code generation
+entole chat "Write a Python function to calculate fibonacci numbers"
 
-### Getting Started
+# File-based prompt
+echo "Explain this code" > prompt.txt
+entole chat --file prompt.txt
 
-- [**Quickstart Guide**](./docs/cli/index.md) - Get up and running quickly
-- [**Authentication Setup**](./docs/cli/authentication.md) - Detailed auth configuration
-- [**Configuration Guide**](./docs/cli/configuration.md) - Settings and customization
-- [**Keyboard Shortcuts**](./docs/keyboard-shortcuts.md) - Productivity tips
-
-### Core Features
-
-- [**Commands Reference**](./docs/cli/commands.md) - All slash commands (`/help`, `/chat`, `/mcp`, etc.)
-- [**Checkpointing**](./docs/checkpointing.md) - Save and resume conversations
-- [**Memory Management**](./docs/tools/memory.md) - Using GEMINI.md context files
-- [**Token Caching**](./docs/cli/token-caching.md) - Optimize token usage
-
-### Tools & Extensions
-
-- [**Built-in Tools Overview**](./docs/tools/index.md)
-  - [File System Operations](./docs/tools/file-system.md)
-  - [Shell Commands](./docs/tools/shell.md)
-  - [Web Fetch & Search](./docs/tools/web-fetch.md)
-  - [Multi-file Operations](./docs/tools/multi-file.md)
-- [**MCP Server Integration**](./docs/tools/mcp-server.md) - Extend with custom tools
-- [**Custom Extensions**](./docs/extension.md) - Build your own commands
-
-### Advanced Topics
-
-- [**Architecture Overview**](./docs/architecture.md) - How Gemini CLI works
-- [**IDE Integration**](./docs/ide-integration.md) - VS Code companion
-- [**Sandboxing & Security**](./docs/sandbox.md) - Safe execution environments
-- [**Enterprise Deployment**](./docs/deployment.md) - Docker, system-wide config
-- [**Telemetry & Monitoring**](./docs/telemetry.md) - Usage tracking
-- [**Tools API Development**](./docs/core/tools-api.md) - Create custom tools
-
-### Configuration & Customization
-
-- [**Settings Reference**](./docs/cli/configuration.md) - All configuration options
-- [**Theme Customization**](./docs/cli/themes.md) - Visual customization
-- [**.gemini Directory**](./docs/gemini-ignore.md) - Project-specific settings
-- [**Environment Variables**](./docs/cli/configuration.md#environment-variables)
-
-### Troubleshooting & Support
-
-- [**Troubleshooting Guide**](./docs/troubleshooting.md) - Common issues and solutions
-- [**FAQ**](./docs/troubleshooting.md#frequently-asked-questions) - Quick answers
-- Use `/bug` command to report issues directly from the CLI
-
-### Using MCP Servers
-
-Configure MCP servers in `~/.gemini/settings.json` to extend Gemini CLI with custom tools:
-
-```text
-> @github List my open pull requests
-> @slack Send a summary of today's commits to #dev channel
-> @database Run a query to find inactive users
+# Streaming with specific model
+entole chat "Tell me a story" --provider anthropic --stream
 ```
 
-See the [MCP Server Integration guide](./docs/tools/mcp-server.md) for setup instructions.
+#### Embedding Examples
+
+```bash
+# Single text embedding
+entole embed "Machine learning is fascinating"
+
+# Multiple texts
+entole embed "First text" "Second text"
+
+# From file
+entole embed @README.md
+
+# JSON output for processing
+entole embed "Sample text" --json | jq '.data.vectors[0] | length'
+```
+
+## 📚 API Documentation
+
+### Command Line Interface
+
+#### `entole chat [prompt]`
+
+Chat with AI models using natural language.
+
+**Arguments:**
+- `prompt` (optional) - The text prompt to send to the AI
+
+**Options:**
+- `-p, --provider <provider>` - AI provider (openai, anthropic, ollama, openrouter)
+- `-m, --model <model>` - Specific model to use
+- `-f, --file <file>` - Read prompt from file
+- `-s, --stream` - Stream the response in real-time
+- `-t, --temperature <temp>` - Temperature for response generation (0.0-2.0)
+- `--top-p <top_p>` - Top-p for response generation (0.0-1.0)
+- `--max-tokens <tokens>` - Maximum tokens to generate
+- `--json` - Output in JSON format
+
+**Examples:**
+```bash
+entole chat "Hello world"
+entole chat --file prompt.txt --provider anthropic --stream
+entole chat "Explain AI" --json --max-tokens 100
+```
+
+#### `entole embed <input>`
+
+Generate embeddings for text input.
+
+**Arguments:**
+- `input` - Text to embed (or @filename to read from file)
+
+**Options:**
+- `-p, --provider <provider>` - AI provider to use
+- `-m, --model <model>` - Model to use for embeddings
+- `--json` - Output in JSON format
+
+**Examples:**
+```bash
+entole embed "Hello world"
+entole embed @document.txt --provider openai
+entole embed "Sample text" --json
+```
+
+#### `entole providers list`
+
+List available providers and their capabilities.
+
+**Options:**
+- `--json` - Output in JSON format
+
+#### `entole config doctor`
+
+Validate configuration and provider setup.
+
+**Options:**
+- `--json` - Output results in JSON format
+
+### Library API
+
+Entole can also be used as a Node.js library:
+
+```typescript
+import { 
+  ProviderRegistry, 
+  OpenAIAdapter, 
+  AnthropicAdapter,
+  loadConfig 
+} from 'entole';
+
+// Load configuration
+const { config } = await loadConfig();
+
+// Create provider registry
+const registry = new ProviderRegistry();
+registry.register(new OpenAIAdapter(config.providers?.openai));
+registry.register(new AnthropicAdapter(config.providers?.anthropic));
+
+// Use providers
+const provider = registry.resolve('openai', 'chat');
+const response = await provider.invokeChat({
+  messages: [{ role: 'user', content: 'Hello!' }]
+});
+
+console.log(response.text);
+```
+
+### Core Interfaces
+
+#### `ProviderAdapter`
+
+Base interface that all AI providers implement:
+
+```typescript
+interface ProviderAdapter {
+  key: string;                    // Provider identifier
+  label: string;                  // Human-readable name
+  capabilities: CapabilityFlags;  // Supported features
+
+  // Core methods
+  invokeChat(params: ChatParams): Promise<ChatResponse>;
+  invokeChatStream(params: ChatParams): AsyncIterable<ChatStreamChunk>;
+  invokeEmbeddings(params: EmbeddingParams): Promise<EmbeddingResponse>;
+  getModels(): Promise<ModelInfo[]>;
+  normalizeError(error: unknown): NormalizedError;
+}
+```
+
+#### `ChatParams`
+
+Parameters for chat operations:
+
+```typescript
+interface ChatParams {
+  model?: string;
+  messages: Array<{
+    role: 'system' | 'user' | 'assistant';
+    content: string;
+  }>;
+  temperature?: number;
+  top_p?: number;
+  max_tokens?: number;
+}
+```
+
+#### `ChatResponse`
+
+Response from chat operations:
+
+```typescript
+interface ChatResponse {
+  text: string;
+  meta?: {
+    model?: string;
+    usage?: {
+      prompt_tokens?: number;
+      completion_tokens?: number;
+      total_tokens?: number;
+    };
+    finish_reason?: string;
+  };
+}
+```
+
+#### `EmbeddingParams`
+
+Parameters for embedding operations:
+
+```typescript
+interface EmbeddingParams {
+  model?: string;
+  input: string | string[];
+}
+```
+
+#### `EmbeddingResponse`
+
+Response from embedding operations:
+
+```typescript
+interface EmbeddingResponse {
+  vectors: number[][];
+  meta?: {
+    model?: string;
+    usage?: {
+      prompt_tokens?: number;
+      total_tokens?: number;
+    };
+  };
+}
+```
+
+### Configuration Schema
+
+#### `EntoleConfig`
+
+Main configuration interface:
+
+```typescript
+interface EntoleConfig {
+  providers?: {
+    default?: {
+      chat?: string;
+      embeddings?: string;
+    };
+    openai?: {
+      apiKey?: string;
+      baseUrl?: string;
+      defaultModel?: string;
+    };
+    anthropic?: {
+      apiKey?: string;
+      defaultModel?: string;
+    };
+    ollama?: {
+      host?: string;
+      defaultModel?: string;
+    };
+    openrouter?: {
+      apiKey?: string;
+      defaultModel?: string;
+    };
+  };
+  output?: {
+    format?: 'human' | 'json';
+    streaming?: boolean;
+  };
+  observability?: {
+    timings?: boolean;
+  };
+}
+```
+
+### Output Formats
+
+#### Human Format
+
+Default human-friendly output with colors and formatting:
+
+```
+Hello! How can I help you today?
+
+─── Model: gpt-4o-mini • Usage: 10 prompt, 9 completion, 19 total tokens ───
+```
+
+#### JSON Format
+
+Structured JSON envelope for programmatic use:
+
+```json
+{
+  "ok": true,
+  "command": "chat",
+  "provider": "openai",
+  "model": "gpt-4o-mini",
+  "data": {
+    "text": "Hello! How can I help you today?",
+    "meta": {
+      "model": "gpt-4o-mini",
+      "usage": {
+        "prompt_tokens": 10,
+        "completion_tokens": 9,
+        "total_tokens": 19
+      },
+      "finish_reason": "stop"
+    }
+  },
+  "meta": {
+    "requestId": "req_1703123456789_abc123def",
+    "timingsMs": {
+      "total": 1500,
+      "provider": 1200,
+      "config": 50
+    }
+  }
+}
+```
+
+### Error Handling
+
+All errors are normalized to a consistent format:
+
+```typescript
+interface NormalizedError {
+  provider: string;
+  type: 'auth' | 'rate_limit' | 'network' | 'bad_request' | 'not_implemented' | 'internal';
+  message: string;
+  hint?: string;
+  httpStatus?: number;
+  retryable: boolean;
+}
+```
+
+Example error output:
+
+```json
+{
+  "ok": false,
+  "command": "chat",
+  "data": null,
+  "meta": {
+    "error": {
+      "provider": "openai",
+      "type": "auth",
+      "message": "Invalid API key",
+      "hint": "Check your OPENAI_API_KEY environment variable. Get your API key from https://platform.openai.com/api-keys",
+      "httpStatus": 401,
+      "retryable": false
+    }
+  }
+}
+```
+
+### Usage Examples
+
+See [examples/basic-usage.ts](examples/basic-usage.ts) for comprehensive usage examples including:
+
+- Basic chat operations
+- Streaming responses with timing
+- Embedding generation
+- Provider registry usage
+- Configuration loading
+
+Run the examples:
+
+```bash
+# Install dependencies and build
+npm install && npm run build
+
+# Run examples (requires API keys)
+node examples/basic-usage.ts
+```
+
+### Exported APIs
+
+When using Entole as a library, the following APIs are available:
+
+#### Core Types
+```typescript
+import {
+  CapabilityFlags,
+  ChatParams,
+  ChatResponse,
+  ChatStreamChunk,
+  EmbeddingParams,
+  EmbeddingResponse,
+  ModelInfo,
+  NormalizedError,
+  ProviderAdapter,
+  OutputEnvelope
+} from 'entole';
+```
+
+#### Provider System
+```typescript
+import {
+  ProviderRegistry,
+  BaseProviderAdapter,
+  registerProvider,
+  getProvider,
+  resolveProvider,
+  getProviderInfo
+} from 'entole';
+```
+
+#### Provider Implementations
+```typescript
+import {
+  OpenAIAdapter,
+  AnthropicAdapter,
+  OllamaAdapter,
+  OpenRouterAdapter,
+  MistralAdapter,
+  CohereAdapter
+} from 'entole';
+```
+
+#### Configuration
+```typescript
+import {
+  loadConfig,
+  EntoleConfig,
+  ConfigValidationError,
+  ConfigFileError
+} from 'entole';
+```
+
+#### Output Formatting
+```typescript
+import {
+  formatChatResponse,
+  formatEmbeddingResponse,
+  formatProviderList,
+  formatError,
+  StreamingOutput,
+  createSuccessEnvelope,
+  createErrorEnvelope,
+  getOutputFormat,
+  outputContent,
+  outputError
+} from 'entole';
+```
+
+#### Timing and Observability
+```typescript
+import {
+  initializeTimings,
+  withTiming,
+  closeTimings,
+  TimingCollector,
+  TimingRecord
+} from 'entole';
+```
+
+## 🤖 Development Automation (Kiro Agent Hooks)
+
+This project includes Kiro Agent Hooks for automated development workflows. These hooks help maintain code quality and assist with development tasks:
+
+### Available Hooks
+
+#### Automatic Code Quality (on-save-source.yml)
+
+- **Trigger**: When TypeScript files in `src/` are saved
+- **Actions**: 
+  - Formats the saved file with Prettier
+  - Lints the saved file with ESLint
+  - Runs related test files if they exist
+- **Auto-approved**: Yes (runs automatically)
+
+#### Test File Scaffolding (on-create-test.yml)
+
+- **Trigger**: When new TypeScript files are created in `src/`
+- **Actions**: Creates matching `.test.ts` files with basic Vitest structure
+- **Auto-approved**: No (requires review)
+
+#### Dependency Tracking (on-save-package.yml)
+
+- **Trigger**: When `package.json` is saved
+- **Actions**: 
+  - Analyzes dependency changes
+  - Fetches release notes for updated packages
+  - Updates CHANGELOG.md with dependency changes
+- **Auto-approved**: No (requires review)
+
+#### TODO/FIXME Sweep (manual-todo-sweep.yml)
+
+- **Trigger**: Manual button click
+- **Actions**: 
+  - Scans codebase for TODO and FIXME comments
+  - Identifies items added today
+  - Categorizes by priority and complexity
+  - Generates actionable summary report
+- **Auto-approved**: No (requires review)
+
+### Requirements
+
+To use these hooks, you need:
+
+- Kiro IDE with Agent Hooks support
+- Node.js 18+ with npm scripts configured
+- Git repository for change tracking
+- Brave MCP server configured (for dependency tracking)
+
+### Hook Configuration
+
+Hooks are defined in `.kiro/hooks/` and use YAML configuration format. Each hook specifies:
+
+- Trigger conditions (file patterns, manual buttons)
+- Execution steps (commands or AI agent prompts)
+- Settings (auto-approval, timeouts, etc.)
+
+## 🧪 Testing
+
+Entole includes comprehensive test coverage:
+
+```bash
+# Run all tests
+npm test
+
+# Run with coverage
+npm run test:coverage
+
+# Run unit tests only
+npm run test:unit
+
+# Run integration tests (requires Ollama for some tests)
+npm run test:integration
+
+# Watch mode for development
+npm run test:watch
+```
+
+### Integration Tests
+
+Some integration tests require external services:
+
+- **Ollama tests**: Require Ollama running at `OLLAMA_HOST` (default: `http://localhost:11434`)
+- **Provider tests**: May require API keys for full testing (use environment variables)
+
+Tests will automatically skip if required services are unavailable.
 
 ## 🤝 Contributing
 
-We welcome contributions! Gemini CLI is fully open source (Apache 2.0), and we encourage the community to:
+We welcome contributions! Entole is fully open source (Apache 2.0), and we encourage the community to:
 
 - Report bugs and suggest features
 - Improve documentation
 - Submit code improvements
-- Share your MCP servers and extensions
+- Add new provider adapters
 
 See our [Contributing Guide](./CONTRIBUTING.md) for development setup, coding standards, and how to submit pull requests.
 
-Check our [Official Roadmap](https://github.com/orgs/google-gemini/projects/11/) for planned features and priorities.
+### Development Workflow
+
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/my-feature`
+3. Make your changes and add tests
+4. Run the test suite: `npm test`
+5. Run linting: `npm run lint`
+6. Format code: `npm run format`
+7. Submit a pull request
+
+### Adding New Providers
+
+To add a new AI provider:
+
+1. Create a new adapter class extending `BaseProviderAdapter`
+2. Implement all required methods (`invokeChat`, `invokeEmbeddings`, etc.)
+3. Add comprehensive tests
+4. Register the provider in `src/providers/index.ts`
+5. Update documentation
 
 ## 📖 Resources
 
-- **[Official Roadmap](./ROADMAP.md)** - See what's coming next
-- **[NPM Package](https://www.npmjs.com/package/@google/gemini-cli)** - Package registry
-- **[GitHub Issues](https://github.com/google-gemini/gemini-cli/issues)** - Report bugs or request features
-- **[Security Advisories](https://github.com/google-gemini/gemini-cli/security/advisories)** - Security updates
-
-### Uninstall
-
-See the [Uninstall Guide](docs/Uninstall.md) for removal instructions.
+- **[GitHub Repository](https://github.com/StellarSk8board/Entole)** - Source code and issues
+- **[NPM Package](https://www.npmjs.com/package/entole)** - Package registry
+- **[GitHub Issues](https://github.com/StellarSk8board/Entole/issues)** - Report bugs or request features
+- **[Security Advisories](https://github.com/StellarSk8board/Entole/security/advisories)** - Security updates
 
 ## 📄 Legal
 
 - **License**: [Apache License 2.0](LICENSE)
-- **Terms of Service**: [Terms & Privacy](./docs/tos-privacy.md)
+- **Attribution**: This project contains substantial changes by Metisse to the original work by Google LLC
 - **Security**: [Security Policy](SECURITY.md)
+
+### Upstream Attribution
+
+This project is based on the Gemini CLI by Google LLC, with substantial modifications by Metisse. The original work is licensed under the Apache License 2.0. See [NOTICE](NOTICE) for full attribution details.
 
 ---
 
 <p align="center">
-  Built with ❤️ by Google and the open source community
+  Built with ❤️ by Metisse
 </p>
