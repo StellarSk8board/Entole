@@ -2,9 +2,9 @@
 
 // src/index.ts
 import { Command as Command5 } from "commander";
-import { readFileSync as readFileSync4 } from "fs";
+import { readFileSync as readFileSync3 } from "fs";
 import { fileURLToPath } from "url";
-import { dirname, join as join3 } from "path";
+import { dirname, join as join2 } from "path";
 
 // src/timings.ts
 import { mkdir } from "fs/promises";
@@ -193,216 +193,27 @@ async function closeTimings() {
 
 // src/commands/chat.ts
 import { Command } from "commander";
-import { readFileSync as readFileSync2, existsSync as existsSync2 } from "fs";
-
-// src/config/loader.ts
 import { readFileSync, existsSync } from "fs";
-import { resolve, join as join2 } from "path";
-import { homedir as homedir2 } from "os";
-import * as YAML from "yaml";
 
-// src/config/schema.ts
-import { z } from "zod";
-var OpenAIConfigSchema = z.object({
-  apiKey: z.string().optional(),
-  baseUrl: z.string().url().optional(),
-  defaultModel: z.string().optional()
-}).strict();
-var AnthropicConfigSchema = z.object({
-  apiKey: z.string().optional(),
-  defaultModel: z.string().optional()
-}).strict();
-var OllamaConfigSchema = z.object({
-  host: z.string().url().optional(),
-  defaultModel: z.string().optional()
-}).strict();
-var OpenRouterConfigSchema = z.object({
-  apiKey: z.string().optional(),
-  defaultModel: z.string().optional()
-}).strict();
-var DefaultProviderConfigSchema = z.object({
-  chat: z.string().optional(),
-  embeddings: z.string().optional()
-}).strict();
-var ProvidersConfigSchema = z.object({
-  default: DefaultProviderConfigSchema.optional(),
-  openai: OpenAIConfigSchema.optional(),
-  anthropic: AnthropicConfigSchema.optional(),
-  ollama: OllamaConfigSchema.optional(),
-  openrouter: OpenRouterConfigSchema.optional()
-}).strict();
-var OutputConfigSchema = z.object({
-  format: z.enum(["human", "json"]).optional(),
-  streaming: z.boolean().optional()
-}).strict();
-var ObservabilityConfigSchema = z.object({
-  timings: z.boolean().optional()
-}).strict();
-var EntoleConfigSchema = z.object({
-  providers: ProvidersConfigSchema.optional(),
-  output: OutputConfigSchema.optional(),
-  observability: ObservabilityConfigSchema.optional()
-}).strict();
-var ENV_VAR_MAPPING = {
-  // Provider API keys
-  OPENAI_API_KEY: "providers.openai.apiKey",
-  ANTHROPIC_API_KEY: "providers.anthropic.apiKey",
-  OPENROUTER_API_KEY: "providers.openrouter.apiKey",
-  // Ollama configuration
-  OLLAMA_HOST: "providers.ollama.host",
-  OLLAMA_MODEL: "providers.ollama.defaultModel",
-  // Default models
-  ENTOLE_DEFAULT_CHAT_PROVIDER: "providers.default.chat",
-  ENTOLE_DEFAULT_EMBEDDINGS_PROVIDER: "providers.default.embeddings",
-  // Output configuration
-  ENTOLE_OUTPUT_FORMAT: "output.format",
-  ENTOLE_STREAMING: "output.streaming",
-  // Observability
-  ENTOLE_TIMINGS: "observability.timings"
-};
-var CLI_FLAG_MAPPING = {
-  provider: "providers.default.chat",
-  format: "output.format",
-  stream: "output.streaming",
-  json: "output.format"
-  // Special case: --json sets format to 'json'
-};
-
-// src/config/loader.ts
-async function loadConfig(options = {}) {
-  const sources = {
-    env: [],
-    file: void 0,
-    cli: []
-  };
-  let config = {};
-  if (options.cliFlags) {
-    const cliConfig = loadFromCliFlags(options.cliFlags);
-    config = mergeConfigs(config, cliConfig);
-    sources.cli = Object.keys(options.cliFlags).filter(
-      (key) => key in CLI_FLAG_MAPPING
-    );
-  }
-  const fileConfig = await loadFromConfigFile(options.configPath);
-  if (fileConfig.config) {
-    config = mergeConfigs(config, fileConfig.config);
-    sources.file = fileConfig.path;
-  }
-  const envConfig = loadFromEnvironment();
-  if (Object.keys(envConfig.config).length > 0) {
-    config = mergeConfigs(config, envConfig.config);
-    sources.env = envConfig.sources;
-  }
-  const validationResult = EntoleConfigSchema.safeParse(config);
-  if (!validationResult.success) {
-    throw new ConfigValidationError(
-      "Configuration validation failed",
-      validationResult.error.issues
-    );
-  }
-  return {
-    config: validationResult.data,
-    sources
-  };
-}
-function loadFromEnvironment() {
-  const config = {};
-  const sources = [];
-  for (const [envVar, configPath] of Object.entries(ENV_VAR_MAPPING)) {
-    const value = process.env[envVar];
-    if (value !== void 0) {
-      setNestedValue(config, configPath, parseEnvValue(value));
-      sources.push(envVar);
-    }
-  }
-  return { config, sources };
-}
-async function loadFromConfigFile(configPath) {
-  const possiblePaths = configPath ? [configPath] : [
-    "entole.config.json",
-    "entole.config.yaml",
-    "entole.config.yml",
-    join2(homedir2(), ".entole", "config.json"),
-    join2(homedir2(), ".entole", "config.yaml"),
-    join2(homedir2(), ".entole", "config.yml")
-  ];
-  for (const path of possiblePaths) {
-    const resolvedPath = resolve(path);
-    if (existsSync(resolvedPath)) {
-      try {
-        const content = readFileSync(resolvedPath, "utf-8");
-        const config = path.endsWith(".json") ? JSON.parse(content) : YAML.parse(content);
-        return { config, path: resolvedPath };
-      } catch (error) {
-        throw new ConfigFileError(
-          `Failed to parse config file: ${resolvedPath}`,
-          error instanceof Error ? error.message : String(error)
-        );
-      }
-    }
-  }
-  return {};
-}
-function loadFromCliFlags(flags) {
-  const config = {};
-  for (const [flag, configPath] of Object.entries(CLI_FLAG_MAPPING)) {
-    const value = flags[flag];
-    if (value !== void 0 && value !== null) {
-      if (flag === "json" && value === true) {
-        setNestedValue(config, "output.format", "json");
-      } else if (flag !== "json") {
-        setNestedValue(config, configPath, value);
-      }
-    }
-  }
-  return config;
-}
-function parseEnvValue(value) {
-  if (value.toLowerCase() === "true") return true;
-  if (value.toLowerCase() === "false") return false;
-  if (/^\d+$/.test(value)) return parseInt(value, 10);
-  if (/^\d+\.\d+$/.test(value)) return parseFloat(value);
-  return value;
-}
-function setNestedValue(obj, path, value) {
-  const keys = path.split(".");
-  let current = obj;
-  for (let i = 0; i < keys.length - 1; i++) {
-    const key = keys[i];
-    if (!(key in current) || typeof current[key] !== "object" || current[key] === null) {
-      current[key] = {};
-    }
-    current = current[key];
-  }
-  current[keys[keys.length - 1]] = value;
-}
-function mergeConfigs(base, override) {
-  const result = { ...base };
-  for (const [key, value] of Object.entries(override)) {
-    if (value !== void 0) {
-      if (typeof value === "object" && value !== null && !Array.isArray(value)) {
-        result[key] = mergeConfigs(result[key] || {}, value);
-      } else {
-        result[key] = value;
-      }
-    }
-  }
-  return result;
-}
+// src/config/loader.js
 var ConfigValidationError = class extends Error {
-  constructor(message, issues) {
+  constructor(message) {
     super(message);
-    this.issues = issues;
     this.name = "ConfigValidationError";
   }
 };
 var ConfigFileError = class extends Error {
-  constructor(message, cause) {
+  constructor(message) {
     super(message);
-    this.cause = cause;
     this.name = "ConfigFileError";
   }
 };
+function loadConfig() {
+  return {
+    providers: {},
+    settings: {}
+  };
+}
 
 // src/providers/registry.ts
 var ProviderRegistry = class {
@@ -2332,16 +2143,16 @@ var chatCommand = new Command("chat").description("Chat with an AI provider").ar
     initializeTimings(timingsEnabled);
     let promptText = prompt;
     if (options.file) {
-      if (!existsSync2(options.file)) {
+      if (!existsSync(options.file)) {
         throw new Error(`File not found: ${options.file}`);
       }
-      promptText = readFileSync2(options.file, "utf-8").trim();
+      promptText = readFileSync(options.file, "utf-8").trim();
     } else if (promptText && promptText.startsWith("@")) {
       const filename = promptText.slice(1);
-      if (!existsSync2(filename)) {
+      if (!existsSync(filename)) {
         throw new Error(`File not found: ${filename}`);
       }
-      promptText = readFileSync2(filename, "utf-8").trim();
+      promptText = readFileSync(filename, "utf-8").trim();
     }
     if (!promptText) {
       throw new Error(
@@ -2487,7 +2298,7 @@ var chatCommand = new Command("chat").description("Chat with an AI provider").ar
 
 // src/commands/embed.ts
 import { Command as Command2 } from "commander";
-import { readFileSync as readFileSync3, existsSync as existsSync3 } from "fs";
+import { readFileSync as readFileSync2, existsSync as existsSync2 } from "fs";
 var embedCommand = new Command2("embed").description("Generate embeddings for text").argument("<input>", "Text to embed (or @filename to read from file)").option(
   "-p, --provider <provider>",
   "AI provider to use (openai, ollama, openrouter)"
@@ -2511,10 +2322,10 @@ var embedCommand = new Command2("embed").description("Generate embeddings for te
     let inputText = input;
     if (input.startsWith("@")) {
       const filename = input.slice(1);
-      if (!existsSync3(filename)) {
+      if (!existsSync2(filename)) {
         throw new Error(`File not found: ${filename}`);
       }
-      inputText = readFileSync3(filename, "utf-8").trim();
+      inputText = readFileSync2(filename, "utf-8").trim();
     }
     if (!inputText) {
       throw new Error("No input text provided.");
@@ -2681,6 +2492,15 @@ providersCommand.command("list").description("List available providers and their
 
 // src/commands/doctor.ts
 import { Command as Command4 } from "commander";
+
+// src/config/schema.js
+var ENV_VAR_MAPPING = {
+  GEMINI_API_KEY: "apiKey",
+  GEMINI_MODEL: "model",
+  GEMINI_ENDPOINT: "endpoint"
+};
+
+// src/commands/doctor.ts
 var doctorCommand = new Command4("doctor").description("Validate configuration and provider setup").option("--json", "Output results in JSON format").action(async (options) => {
   const outputFormat = getOutputFormat(options.json);
   try {
@@ -2956,7 +2776,7 @@ function printHumanReadableResults(result) {
 var __filename = fileURLToPath(import.meta.url);
 var __dirname = dirname(__filename);
 var packageJson = JSON.parse(
-  readFileSync4(join3(__dirname, "../package.json"), "utf-8")
+  readFileSync3(join2(__dirname, "../package.json"), "utf-8")
 );
 var program = new Command5();
 program.name("entole").description("Multi-provider AI CLI for chat and embeddings by Metisse").version(packageJson.version);
@@ -2993,6 +2813,7 @@ export {
   getProviderInfo,
   getTimingCollector,
   initializeTimings,
+  loadConfig,
   normalizeHttpError,
   normalizeNetworkError,
   providerRegistry,
@@ -3002,4 +2823,9 @@ export {
   validateRequiredConfig,
   withTiming
 };
+/**
+ * @license
+ * Copyright 2025 Google LLC
+ * SPDX-License-Identifier: Apache-2.0
+ */
 //# sourceMappingURL=index.js.map

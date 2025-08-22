@@ -1,0 +1,78 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`CLI Snapshots > should match chat command help snapshot 1`] = `
+"Usage: entole chat [options] [prompt]
+
+Chat with an AI provider
+
+Arguments:
+  prompt                     The prompt to send to the AI (or use --file)
+
+Options:
+  -p, --provider <provider>  AI provider to use (openai, anthropic, ollama,
+                             openrouter)
+  -m, --model <model>        Model to use
+  -f, --file <file>          Read prompt from file (use @filename in prompt for
+                             inline file reading)
+  -s, --stream               Stream the response (default: false)
+  -t, --temperature <temp>   Temperature for response generation
+  --top-p <top_p>            Top-p for response generation
+  --max-tokens <tokens>      Maximum tokens to generate
+  --json                     Output in JSON format (default: false)
+  -h, --help                 display help for command"
+`;
+
+exports[`CLI Snapshots > should match doctor command help snapshot 1`] = `
+"Usage: entole doctor [options]
+
+Validate configuration and provider setup
+
+Options:
+  --json      Output results in JSON format
+  -h, --help  display help for command"
+`;
+
+exports[`CLI Snapshots > should match embed command help snapshot 1`] = `
+"Usage: entole embed [options] <input>
+
+Generate embeddings for text
+
+Arguments:
+  input                      Text to embed (or @filename to read from file)
+
+Options:
+  -p, --provider <provider>  AI provider to use (openai, ollama, openrouter)
+  -m, --model <model>        Model to use for embeddings
+  --json                     Output in JSON format (default: false)
+  -h, --help                 display help for command"
+`;
+
+exports[`CLI Snapshots > should match help output snapshot 1`] = `
+"Usage: entole [options] [command]
+
+Multi-provider AI CLI for chat and embeddings by Metisse
+
+Options:
+  -V, --version            output the version number
+  -h, --help               display help for command
+
+Commands:
+  chat [options] [prompt]  Chat with an AI provider
+  embed [options] <input>  Generate embeddings for text
+  providers                Manage AI providers
+  doctor [options]         Validate configuration and provider setup
+  help [command]           display help for command"
+`;
+
+exports[`CLI Snapshots > should match providers command help snapshot 1`] = `
+"Usage: entole providers [options] [command]
+
+Manage AI providers
+
+Options:
+  -h, --help      display help for command
+
+Commands:
+  list [options]  List available providers and their capabilities
+  help [command]  display help for command"
+`;

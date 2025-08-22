@@ -1,0 +1,9 @@
+{
+  "name": "@google/gemini-cli-core",
+  "version": "0.1.21",
+  "main": "index.js",
+  "type": "module",
+  "exports": {
+    ".": "./index.js"
+  }
+}

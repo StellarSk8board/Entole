@@ -17,6 +17,9 @@ import { embedCommand } from './commands/embed.js';
 import { providersCommand } from './commands/providers.js';
 import { doctorCommand } from './commands/doctor.js';
 
+// Re-export loadConfig for external use
+export { loadConfig } from './config/loader.js';
+
 // Get package.json for version
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);

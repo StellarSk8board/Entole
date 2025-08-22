@@ -10,7 +10,7 @@ import tsparser from '@typescript-eslint/parser';
 export default [
   js.configs.recommended,
   {
-    files: ['src/**/*.ts'],
+    files: ['**/*.ts', '**/*.tsx'],
     languageOptions: {
       parser: tsparser,
       parserOptions: {
@@ -47,6 +47,7 @@ export default [
         
         // TypeScript/Node types
         RequestInit: 'readonly',
+        NodeJS: 'readonly',
       },
     },
     plugins: {
@@ -60,6 +61,31 @@ export default [
     },
   },
   {
-    ignores: ['dist/', 'node_modules/', '**/*.js', '**/*.mjs'],
+    files: ['examples/**/*.ts'],
+    languageOptions: {
+      globals: {
+        console: 'readonly',
+        process: 'readonly',
+      },
+    },
+  },
+  {
+    files: ['**/*.test.ts', '**/*.test.tsx'],
+    languageOptions: {
+      globals: {
+        describe: 'readonly',
+        it: 'readonly',
+        expect: 'readonly',
+        beforeEach: 'readonly',
+        afterEach: 'readonly',
+        beforeAll: 'readonly',
+        afterAll: 'readonly',
+        vi: 'readonly',
+        test: 'readonly',
+      },
+    },
+  },
+  {
+    ignores: ['dist/', 'node_modules/', '**/*.js', '**/*.mjs', 'bundle/', 'scripts/'],
   },
 ];
